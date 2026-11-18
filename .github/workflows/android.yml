@@ -31,15 +31,19 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: false
 
       - name: Accept Android licenses
-        run: yes | sdkmanager --licenses
+        run: |
+          yes | sdkmanager --licenses || true
 
       - name: Prepare Capacitor
         run: |
           npm init -y
           npm install @capacitor/core@7 @capacitor/android@7
           npm install --save-dev @capacitor/cli@7
+
           mkdir www
           cp index.html www/index.html
 
