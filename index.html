@@ -1,1 +1,1202 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#8954df">
+<title>SHAHINAZ v1.3</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f3f4f8;color:#202432;font-family:Arial,sans-serif;padding-bottom:80px}
+button{border:0;cursor:pointer;font-size:14px;color:inherit}
+button:disabled{opacity:.6;cursor:not-allowed}
+[hidden]{display:none!important}
+header{height:60px;background:white;display:flex;align-items:center;justify-content:space-between;padding:0 14px;position:sticky;top:0;z-index:5;border-bottom:1px solid #eee}
+header h1{color:#8954df;font-size:23px}
+header button{background:#f1eaff;color:#8954df;padding:8px 12px;border-radius:8px;margin-right:4px}
+#loading{position:fixed;inset:0;background:white;z-index:1000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:15px;color:#8954df;padding:25px;text-align:center}
+.spinner{width:38px;height:38px;border:4px solid #eee;border-top-color:#8954df;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#auth{min-height:75vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:white;width:100%;max-width:420px;padding:24px;border-radius:18px;box-shadow:0 8px 30px #0000000c}
+.card h2{text-align:center;color:#8954df;font-size:30px;margin-bottom:8px}
+.subtitle{text-align:center;color:#888;margin-bottom:22px}
+.tabs{display:flex;background:#f1eef8;padding:4px;border-radius:10px;margin-bottom:20px}
+.tabs button{flex:1;padding:12px;border-radius:8px;background:transparent}
+.tabs button.active{background:#8954df;color:white}
+label{display:block;margin:13px 0 7px;font-size:13px;font-weight:bold}
+input,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:9px;font-size:15px;outline-color:#8954df;background:white}
+textarea{resize:vertical}
+.primary{width:100%;padding:13px;background:#8954df;color:white;border-radius:9px;margin-top:18px;font-weight:bold}
+#message{text-align:center;font-size:13px;line-height:1.6;margin-top:14px}
+#feedArea,.panel{max-width:650px;margin:auto}
+.stories{display:flex;gap:17px;background:white;padding:15px;overflow-x:auto}
+.story{min-width:58px;text-align:center;font-size:12px}
+.avatar{width:54px;height:54px;border-radius:50%;background:#eee7ff;border:3px solid #a46af0;display:flex;align-items:center;justify-content:center;font-size:24px;margin:auto auto 6px;overflow:hidden;flex-shrink:0}
+.avatar img,.profile-avatar img{width:100%;height:100%;object-fit:cover}
+.composer,.createbox,.post,.panel-card{background:white;margin:10px 0;padding:14px;border-radius:10px}
+.composer{display:flex;align-items:center;gap:12px}
+.composer button{flex:1;text-align:right;background:#f2f2f5;padding:12px;border-radius:25px;color:#777}
+.createbox textarea{min-height:90px;margin-top:10px}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px}
+.actions button{padding:10px}
+.publish,.purple-btn{background:#8954df;color:white;border-radius:8px;padding:10px 14px}
+#preview img{max-width:100%;max-height:220px;object-fit:contain;margin-top:10px}
+.posthead{display:flex;align-items:center;gap:10px}
+.posthead small{display:block;color:#999;margin-top:4px}
+.posttext{line-height:1.8;margin:15px 0;overflow-wrap:anywhere;white-space:pre-wrap}
+.postimage{width:100%;max-height:420px;object-fit:contain;border-radius:8px;background:#eee}
+.postactions{display:flex;justify-content:space-around;align-items:center;border-top:1px solid #eee;margin-top:12px;padding-top:12px;gap:5px}
+.postactions button{background:transparent;color:#8954df;padding:8px}
+.postactions .liked{color:#e33;font-weight:bold}
+.comments{border-top:1px solid #eee;margin-top:10px;padding-top:10px}
+.comment{background:#f6f5f9;border-radius:10px;padding:10px;margin:8px 0;font-size:13px}
+.comment strong{display:block;color:#8954df;margin-bottom:5px}
+.comment p{line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+.comment small{display:block;color:#999;margin-top:5px}
+.comment-form{display:flex;gap:7px;margin-top:10px}
+.comment-form input{min-width:0;flex:1;padding:10px}
+.comment-form button{background:#8954df;color:white;border-radius:8px;padding:0 13px}
+.empty{text-align:center;padding:25px;color:#999}
+.status{text-align:center;color:#888;font-size:13px;padding:12px;overflow-wrap:anywhere}
+.bottom{position:fixed;bottom:0;left:0;right:0;height:65px;background:white;border-top:1px solid #eee;display:flex;justify-content:space-around;align-items:center;z-index:5}
+.bottom button{background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:20px}
+.bottom small{font-size:10px}
+.bottom .active{color:#8954df}
+.panel{padding:10px}
+.panel-title{font-size:21px;color:#8954df;margin:10px 5px 15px}
+.profile-card{text-align:center;background:white;padding:25px 15px;border-radius:12px;margin:10px 0}
+.profile-avatar{width:105px;height:105px;border-radius:50%;background:#eee7ff;border:4px solid #a46af0;display:flex;align-items:center;justify-content:center;overflow:hidden;margin:0 auto 12px;font-size:40px}
+.profile-name{font-size:21px;margin-bottom:7px}
+.profile-bio{color:#777;line-height:1.7;margin:8px auto;max-width:400px;white-space:pre-wrap}
+.stats{display:flex;justify-content:center;gap:35px;margin:18px 0}
+.stats strong{display:block;font-size:20px;color:#8954df}
+.stats span{font-size:12px;color:#888}
+.edit-form{background:white;padding:15px;border-radius:12px;margin:10px 0}
+.edit-form textarea{min-height:80px;margin-top:8px}
+.user-row{display:flex;align-items:center;gap:11px;background:white;padding:12px;border-bottom:1px solid #eee;flex-wrap:wrap}
+.user-info{flex:1;min-width:0}
+.user-info strong{display:block;overflow-wrap:anywhere}
+.user-info small{color:#999;display:block;margin-top:4px}
+.user-row button{border-radius:8px;padding:9px 11px;background:#8954df;color:white;white-space:nowrap}
+.user-row button.secondary{background:#eee;color:#555}
+.user-row button.danger{background:#fff0f0;color:#c33}
+.searchbox{display:flex;gap:7px;margin-bottom:12px}
+.searchbox input{flex:1;min-width:0}
+.searchbox button{background:#8954df;color:white;padding:0 15px;border-radius:8px}
+.chat-top{display:flex;align-items:center;gap:10px}
+.chat-top h3{flex:1}
+#chatMessages{min-height:280px;max-height:58vh;overflow-y:auto;display:flex;flex-direction:column;gap:7px}
+.chat-message{max-width:85%;padding:11px 13px;border-radius:13px;line-height:1.7;overflow-wrap:anywhere;white-space:pre-wrap}
+.chat-mine{background:#8954df;color:white;margin-right:auto;border-bottom-left-radius:3px}
+.chat-theirs{background:#f0edf5;color:#222;margin-left:auto;border-bottom-right-radius:3px}
+.chat-message small{display:block;font-size:10px;opacity:.8;margin-top:5px}
+#chatForm{display:flex;gap:8px}
+#chatForm input{flex:1;min-width:0}
+.conversation-row{display:flex;align-items:center;gap:11px;padding:12px 7px;border-bottom:1px solid #eee;cursor:pointer}
+.conversation-row:active{background:#f5f0ff}
+.conversation-info{flex:1;min-width:0}
+.conversation-info strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.conversation-info p{color:#888;font-size:12px;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.conversation-meta{text-align:left;font-size:10px;color:#999}
+.unread-dot{width:9px;height:9px;border-radius:50%;background:#8954df;display:inline-block}
+.read-status{font-size:10px;color:#ddd}
+.read-status.read{color:#38bdf8}
+#fatal{position:fixed;inset:0;background:white;padding:25px;z-index:2000;line-height:1.8}
+#error{color:#c33;overflow-wrap:anywhere;margin-top:15px}
+</style>
+</head>
+<body>
+
+<div id="loading">
+<h2>SHAHINAZ ❤️</h2>
+<div class="spinner"></div>
+<p id="loadingText">جاري تشغيل التطبيق...</p>
+</div>
+
+<header>
+<h1>SHAHINAZ</h1>
+<div>
+<span id="emailLabel"></span>
+<button id="notificationBtn" hidden>🔔 تفعيل الإشعارات</button>
+<button id="logout" hidden>خروج</button>
+</div>
+</header>
+
+<section id="auth" hidden>
+<div class="card">
+<h2>SHAHINAZ ❤️</h2>
+<p class="subtitle">عالمك الاجتماعي في مكان واحد</p>
+<div class="tabs">
+<button id="loginTab" class="active">تسجيل الدخول</button>
+<button id="signupTab">إنشاء حساب</button>
+</div>
+<form id="authForm">
+<label>البريد الإلكتروني</label>
+<input id="email" type="email" autocomplete="email" required>
+<label>كلمة المرور</label>
+<input id="password" type="password" minlength="6" required>
+<div id="nameField" hidden>
+<label>الاسم</label>
+<input id="fullName" type="text" placeholder="اسمك">
+</div>
+<button class="primary" id="submitBtn">تسجيل الدخول</button>
+</form>
+<p id="message"></p>
+</div>
+</section>
+
+<main id="feedArea" hidden>
+<section class="stories">
+<div class="story"><div class="avatar">＋</div><span>قصتك</span></div>
+<div class="story"><div class="avatar">👨</div><span>أصدقاء</span></div>
+<div class="story"><div class="avatar">👩</div><span>SHAHINAZ</span></div>
+</section>
+<section class="composer">
+<div class="avatar" id="composerAvatar">👤</div>
+<button id="openComposer">بماذا تفكر؟</button>
+</section>
+<section class="createbox" id="createBox" hidden>
+<h3>إنشاء منشور جديد</h3>
+<textarea id="postText" placeholder="شارك أفكارك مع الجميع..."></textarea>
+<input type="file" id="imageInput" accept="image/*" hidden>
+<div id="preview"></div>
+<div class="actions">
+<button id="chooseImage">📷 إضافة صورة</button>
+<button class="publish" id="publishBtn">نشر الآن</button>
+</div>
+</section>
+<div id="feedStatus" class="status"></div>
+<section id="posts"></section>
+</main>
+
+<section id="profilePanel" class="panel" hidden>
+<h2 class="panel-title">👤 ملفي الشخصي</h2>
+<div class="profile-card">
+<div class="profile-avatar" id="profileAvatar">👤</div>
+<h2 class="profile-name" id="profileName">مستخدم SHAHINAZ</h2>
+<p class="profile-bio" id="profileBio">لا توجد نبذة تعريفية</p>
+<div class="stats">
+<div><strong id="profilePosts">0</strong><span>منشورات</span></div>
+<div><strong id="profileFriends">0</strong><span>أصدقاء</span></div>
+</div>
+</div>
+<div class="edit-form">
+<h3>تعديل الملف الشخصي</h3>
+<label>الاسم</label>
+<input id="editName" maxlength="50" placeholder="اسمك">
+<label>نبذة تعريفية</label>
+<textarea id="editBio" maxlength="250" placeholder="اكتب نبذة عن نفسك"></textarea>
+<label>الصورة الشخصية</label>
+<input id="avatarInput" type="file" accept="image/*">
+<div id="avatarPreview"></div>
+<button class="primary" id="saveProfile">حفظ التعديلات</button>
+<p id="profileMessage" class="status"></p>
+</div>
+</section>
+
+<section id="friendsPanel" class="panel" hidden>
+<h2 class="panel-title">🤝 الأصدقاء والرسائل</h2>
+<div class="panel-card">
+<h3>💬 محادثاتي</h3>
+<div id="conversationsList"><div class="empty">جاري تحميل المحادثات...</div></div>
+</div>
+<div class="panel-card">
+<h3>البحث عن مستخدمين</h3>
+<div class="searchbox" style="margin-top:12px">
+<input id="searchUsers" placeholder="اكتب اسم المستخدم...">
+<button id="searchButton">بحث</button>
+</div>
+<div id="searchResults"></div>
+</div>
+<div class="panel-card">
+<h3>📩 طلبات الصداقة الواردة</h3>
+<div id="incomingRequests"></div>
+</div>
+<div class="panel-card">
+<h3>👥 قائمة أصدقائي</h3>
+<div id="friendsList"></div>
+</div>
+</section>
+
+<section id="chatPanel" class="panel" hidden>
+<div class="panel-card chat-top">
+<button id="backFriends" class="purple-btn">رجوع</button>
+<div style="flex:1">
+<h3 id="chatTitle">المحادثة</h3>
+<small style="color:#999">محادثة خاصة ❤️</small>
+</div>
+<button id="refreshChat" class="purple-btn">↻</button>
+</div>
+<div id="chatMessages" class="panel-card"><div class="empty">اختر محادثة</div></div>
+<form id="chatForm" class="panel-card">
+<input id="chatInput" maxlength="5000" placeholder="اكتب رسالتك..." required>
+<button class="purple-btn" type="submit">إرسال</button>
+</form>
+<p id="chatStatus" class="status"></p>
+</section>
+
+<nav class="bottom" id="bottomNav" hidden>
+<button id="homeTab" class="active">⌂<small>الرئيسية</small></button>
+<button id="friendsTab">♧<small>الأصدقاء</small></button>
+<button id="navCreate">＋<small>نشر</small></button>
+<button id="profileTab">♙<small>حسابي</small></button>
+</nav>
+
+<script>
+"use strict";
+
+const SUPABASE_URL="https://xqbawplgscvekbzsaxtt.supabase.co";
+const SUPABASE_KEY="sb_publishable_7a1oqD9KpTn8lEZVciU-gA__oAw6HUc";
+const $=id=>document.getElementById(id);
+
+let db=null,user=null,mode="login";
+let selectedFile=null,avatarFile=null;
+let posts=[],likes=[],comments=[],profile=null,friendRequests=[];
+let busyLikes=new Set(),busyComments=new Set();
+let loadingPosts=false,socialLoading=false;
+let chatUser=null,chatBusy=false,chatChannel=null,inboxChannel=null;
+
+/* إصلاح تشغيل التطبيق لأول مرة */
+let activeUserId=undefined;
+let conversationId=null;
+
+function escapeHTML(value){
+ return String(value??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function stopLoading(){$("loading").hidden=true;}
+
+function fatal(message){
+ stopLoading();
+ $("auth").hidden=true;
+ $("feedArea").hidden=true;
+ $("bottomNav").hidden=true;
+ let box=$("fatal");
+ if(!box){
+  box=document.createElement("div");
+  box.id="fatal";
+  document.body.appendChild(box);
+ }
+ box.innerHTML="";
+ const title=document.createElement("h2");
+ title.textContent="تعذر تشغيل SHAHINAZ";
+ const detail=document.createElement("p");
+ detail.id="error";
+ detail.textContent=message;
+ box.append(title,detail);
+}
+
+window.addEventListener("error",e=>{
+ console.error("SHAHINAZ Error:",e.message,e.filename,e.lineno);
+});
+window.addEventListener("unhandledrejection",e=>{
+ console.error("SHAHINAZ Promise Error:",e.reason);
+});
+
+function showMessage(message,success=false){
+ $("message").textContent=message;
+ $("message").style.color=success?"#168b50":"#d33";
+}
+
+function setMode(newMode){
+ mode=newMode;
+ $("loginTab").classList.toggle("active",mode==="login");
+ $("signupTab").classList.toggle("active",mode==="signup");
+ $("nameField").hidden=mode!=="signup";
+ $("fullName").required=mode==="signup";
+ $("submitBtn").textContent=mode==="login"?"تسجيل الدخول":"إنشاء حساب";
+ showMessage("");
+}
+$("loginTab").onclick=()=>setMode("login");
+$("signupTab").onclick=()=>setMode("signup");
+
+function getAuthorName(){
+ return profile?.display_name||
+ user?.user_metadata?.full_name||
+ user?.email?.split("@")[0]||
+ "مستخدم SHAHINAZ";
+}
+
+function avatarHTML(url){
+ return url?`<img src="${escapeHTML(url)}" alt="الصورة الشخصية">`:"👤";
+}
+
+function formatDate(value){
+ try{
+  return new Date(value).toLocaleString("ar-DZ",{dateStyle:"short",timeStyle:"short"});
+ }catch{return "حديثاً";}
+}
+
+function showUser(session){
+ const nextUser=session?.user||null;
+ const nextId=nextUser?.id||null;
+
+ if(nextId===activeUserId){
+  user=nextUser;
+  return;
+ }
+
+ activeUserId=nextId;
+ user=nextUser;
+
+ $("auth").hidden=!!user;
+ $("feedArea").hidden=!user;
+ $("bottomNav").hidden=!user;
+ $("logout").hidden=!user;
+ $("notificationBtn").hidden=!user;
+ $("emailLabel").textContent=user?user.email:"";
+
+ $("profilePanel").hidden=true;
+ $("friendsPanel").hidden=true;
+ $("chatPanel").hidden=true;
+ $("homeTab").classList.add("active");
+ $("friendsTab").classList.remove("active");
+ $("profileTab").classList.remove("active");
+
+ if(user){
+  loadCloudPosts();
+  loadSocialData();
+  startInboxRealtime();
+ }else{
+  stopInboxRealtime();
+  stopChatRealtime();
+  chatUser=null;
+  conversationId=null;
+  posts=[];likes=[];comments=[];profile=null;friendRequests=[];
+  $("posts").innerHTML="";
+  $("feedStatus").textContent="";
+ }
+}
+
+/* رفع الصور */
+async function uploadImage(file,prefix){
+ if(!file||!file.type.startsWith("image/"))throw new Error("الملف المختار ليس صورة.");
+ if(file.size>5*1024*1024)throw new Error("حجم الصورة أكبر من 5 ميغابايت.");
+ const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
+ const random=window.crypto?.randomUUID?.()||Date.now()+"-"+Math.random().toString(36).slice(2);
+ const path=user.id+"/"+prefix+"-"+random+"."+ext;
+ const {error}=await db.storage.from("post-images").upload(path,file,{
+  cacheControl:"3600",upsert:false,contentType:file.type
+ });
+ if(error)throw error;
+ const result=db.storage.from("post-images").getPublicUrl(path);
+ return result.data.publicUrl;
+}
+
+/* المنشورات */
+async function loadCloudPosts(){
+ if(!db||!user||loadingPosts)return;
+ loadingPosts=true;
+ $("feedStatus").textContent="جاري تحميل المنشورات...";
+ try{
+  const {data,error}=await db.from("posts")
+   .select("id,user_id,author_name,content,image_url,created_at")
+   .order("created_at",{ascending:false}).limit(100);
+  if(error)throw error;
+  posts=data||[];
+  likes=[];comments=[];
+  if(posts.length){
+   const ids=posts.map(p=>p.id);
+   const [lr,cr]=await Promise.all([
+    db.from("post_likes").select("post_id,user_id").in("post_id",ids),
+    db.from("post_comments").select("id,post_id,user_id,author_name,content,created_at")
+     .in("post_id",ids).order("created_at",{ascending:true})
+   ]);
+   if(lr.error)throw lr.error;
+   if(cr.error)throw cr.error;
+   likes=lr.data||[];
+   comments=cr.data||[];
+  }
+  renderPosts();
+  $("feedStatus").textContent=posts.length?"آخر المنشورات من مجتمع SHAHINAZ":"";
+  $("profilePosts").textContent=posts.filter(p=>p.user_id===user.id).length;
+ }catch(error){
+  console.error(error);
+  $("feedStatus").textContent="خطأ في تحميل المنشورات: "+error.message;
+ }finally{loadingPosts=false;}
+}
+
+function renderPosts(){
+ const container=$("posts");
+ if(!container)return;
+ if(!posts.length){
+  container.innerHTML='<div class="empty">لا توجد منشورات بعد ❤️</div>';
+  return;
+ }
+ container.innerHTML=posts.map(p=>{
+  const postLikes=likes.filter(l=>l.post_id===p.id);
+  const liked=postLikes.some(l=>l.user_id===user?.id);
+  const postComments=comments.filter(c=>c.post_id===p.id);
+  return `<article class="post">
+   <div class="posthead">
+    <div class="avatar">👤</div>
+    <div><strong>${escapeHTML(p.author_name||"مستخدم")}</strong>
+    <small>${escapeHTML(formatDate(p.created_at))}</small></div>
+   </div>
+   ${p.content?`<div class="posttext">${escapeHTML(p.content)}</div>`:""}
+   ${p.image_url?`<img class="postimage" src="${escapeHTML(p.image_url)}" alt="صورة المنشور" loading="lazy">`:""}
+   <div class="postactions">
+    <button class="${liked?"liked":""}" data-like="${escapeHTML(p.id)}">${liked?"❤️":"♡"} إعجاب (${postLikes.length})</button>
+    <button data-focus="${escapeHTML(p.id)}">💬 تعليق (${postComments.length})</button>
+    <button data-share="${escapeHTML(p.id)}">↗ مشاركة</button>
+   </div>
+   <div class="comments">
+    ${postComments.map(c=>`<div class="comment">
+     <strong>${escapeHTML(c.author_name)}</strong>
+     <p>${escapeHTML(c.content)}</p>
+     <small>${escapeHTML(formatDate(c.created_at))}</small>
+    </div>`).join("")||'<div class="empty" style="padding:10px">لا توجد تعليقات بعد</div>'}
+    <form class="comment-form" data-comment="${escapeHTML(p.id)}">
+     <input name="comment" maxlength="1000" placeholder="اكتب تعليقاً..." required>
+     <button>إرسال</button>
+    </form>
+   </div>
+  </article>`;
+ }).join("");
+}
+
+$("posts").addEventListener("click",async e=>{
+ const likeBtn=e.target.closest("[data-like]");
+ if(likeBtn){await toggleLike(likeBtn.dataset.like);return;}
+ const focus=e.target.closest("[data-focus]");
+ if(focus){
+  focus.closest(".post")?.querySelector('input[name="comment"]')?.focus();
+  return;
+ }
+ const share=e.target.closest("[data-share]");
+ if(share){
+  const p=posts.find(x=>x.id===share.dataset.share);
+  if(!p)return;
+  const txt=(p.author_name||"SHAHINAZ")+"\n"+(p.content||"منشور من SHAHINAZ");
+  try{
+   if(navigator.share)await navigator.share({title:"SHAHINAZ",text:txt});
+   else if(navigator.clipboard){await navigator.clipboard.writeText(txt);alert("تم نسخ المنشور");}
+   else alert(txt);
+  }catch{}
+ }
+});
+
+async function toggleLike(postId){
+ if(!user||busyLikes.has(postId))return;
+ busyLikes.add(postId);
+ try{
+  const existing=likes.find(l=>l.post_id===postId&&l.user_id===user.id);
+  if(existing){
+   const {error}=await db.from("post_likes").delete().eq("post_id",postId).eq("user_id",user.id);
+   if(error)throw error;
+   likes=likes.filter(l=>!(l.post_id===postId&&l.user_id===user.id));
+  }else{
+   const {data,error}=await db.from("post_likes").insert({post_id:postId,user_id:user.id})
+    .select("post_id,user_id").single();
+   if(error)throw error;
+   likes.push(data);
+  }
+  renderPosts();
+ }catch(error){alert("خطأ في الإعجاب: "+error.message);}
+ finally{busyLikes.delete(postId);}
+}
+
+$("posts").addEventListener("submit",async e=>{
+ const form=e.target.closest("form[data-comment]");
+ if(!form)return;
+ e.preventDefault();
+ const postId=form.dataset.comment;
+ const input=form.querySelector("input");
+ const content=input.value.trim();
+ if(!content||busyComments.has(postId))return;
+ busyComments.add(postId);
+ const btn=form.querySelector("button");
+ btn.disabled=true;
+ try{
+  const {data,error}=await db.from("post_comments").insert({
+   post_id:postId,user_id:user.id,author_name:getAuthorName(),content
+  }).select("id,post_id,user_id,author_name,content,created_at").single();
+  if(error)throw error;
+  comments.push(data);
+  renderPosts();
+ }catch(error){
+  alert("تعذر إضافة التعليق: "+error.message);
+  btn.disabled=false;
+ }finally{busyComments.delete(postId);}
+});
+
+/* إنشاء منشور */
+function openComposer(){
+ $("createBox").hidden=false;
+ $("postText").focus();
+ $("createBox").scrollIntoView({behavior:"smooth"});
+}
+$("openComposer").onclick=openComposer;
+$("navCreate").onclick=()=>{showPanel("home");openComposer();};
+$("chooseImage").onclick=()=>$("imageInput").click();
+
+$("imageInput").onchange=function(){
+ const file=this.files[0];
+ if(!file)return;
+ if(!file.type.startsWith("image/")||file.size>5*1024*1024){
+  alert("اختر صورة أقل من 5 ميغابايت.");
+  this.value="";return;
+ }
+ selectedFile=file;
+ const reader=new FileReader();
+ reader.onload=e=>{
+  $("preview").innerHTML="";
+  const img=document.createElement("img");
+  img.src=e.target.result;
+  $("preview").appendChild(img);
+ };
+ reader.readAsDataURL(file);
+};
+
+$("publishBtn").onclick=async()=>{
+ const content=$("postText").value.trim();
+ if(!content&&!selectedFile){alert("اكتب شيئاً أو اختر صورة.");return;}
+ const btn=$("publishBtn");
+ btn.disabled=true;
+ try{
+  let imageUrl=null;
+  if(selectedFile){
+   btn.textContent="جاري رفع الصورة...";
+   imageUrl=await uploadImage(selectedFile,"post");
+  }
+  btn.textContent="جاري النشر...";
+  const {error}=await db.from("posts").insert({
+   user_id:user.id,author_name:getAuthorName(),content:content||null,image_url:imageUrl
+  });
+  if(error)throw error;
+  $("postText").value="";
+  $("imageInput").value="";
+  $("preview").innerHTML="";
+  selectedFile=null;
+  $("createBox").hidden=true;
+  await loadCloudPosts();
+  alert("تم نشر منشورك بنجاح ❤️");
+ }catch(error){alert("تعذر النشر: "+error.message);}
+ finally{btn.disabled=false;btn.textContent="نشر الآن";}
+};
+
+/* الملف الشخصي */
+async function loadProfile(){
+ if(!user)return;
+ const {data,error}=await db.from("profiles")
+  .select("id,display_name,bio,avatar_url").eq("id",user.id).maybeSingle();
+ if(error)throw error;
+ if(!data){
+  const {data:newProfile,error:createError}=await db.from("profiles").insert({
+   id:user.id,
+   display_name:user.user_metadata?.full_name||user.email.split("@")[0],
+   bio:""
+  }).select("id,display_name,bio,avatar_url").single();
+  if(createError)throw createError;
+  profile=newProfile;
+ }else profile=data;
+ renderProfile();
+}
+
+function renderProfile(){
+ if(!profile)return;
+ $("profileName").textContent=profile.display_name||"مستخدم SHAHINAZ";
+ $("profileBio").textContent=profile.bio||"لا توجد نبذة تعريفية";
+ $("profileAvatar").innerHTML=avatarHTML(profile.avatar_url);
+ $("composerAvatar").innerHTML=avatarHTML(profile.avatar_url);
+ $("editName").value=profile.display_name||"";
+ $("editBio").value=profile.bio||"";
+ $("profilePosts").textContent=posts.filter(p=>p.user_id===user.id).length;
+}
+
+$("avatarInput").onchange=function(){
+ const file=this.files[0];
+ if(!file)return;
+ if(!file.type.startsWith("image/")||file.size>5*1024*1024){
+  alert("اختر صورة أقل من 5 ميغابايت.");
+  this.value="";return;
+ }
+ avatarFile=file;
+ const reader=new FileReader();
+ reader.onload=e=>{
+  $("avatarPreview").innerHTML="";
+  const img=document.createElement("img");
+  img.src=e.target.result;
+  img.style.cssText="width:90px;height:90px;object-fit:cover;border-radius:50%;margin-top:10px";
+  $("avatarPreview").appendChild(img);
+ };
+ reader.readAsDataURL(file);
+};
+
+$("saveProfile").onclick=async()=>{
+ const name=$("editName").value.trim();
+ const bio=$("editBio").value.trim();
+ if(!name){alert("اكتب اسمك.");return;}
+ const btn=$("saveProfile");
+ btn.disabled=true;
+ $("profileMessage").textContent="جاري الحفظ...";
+ try{
+  let avatarUrl=profile?.avatar_url||null;
+  if(avatarFile)avatarUrl=await uploadImage(avatarFile,"avatar");
+  const {data,error}=await db.from("profiles").update({
+   display_name:name,bio,avatar_url:avatarUrl
+  }).eq("id",user.id).select("id,display_name,bio,avatar_url").single();
+  if(error)throw error;
+  profile=data;
+  avatarFile=null;
+  $("avatarInput").value="";
+  $("avatarPreview").innerHTML="";
+  renderProfile();
+  $("profileMessage").textContent="تم حفظ الملف الشخصي ❤️";
+  $("profileMessage").style.color="#168b50";
+  const {error:authError}=await db.auth.updateUser({data:{full_name:name}});
+  if(authError)console.warn(authError);
+ }catch(error){
+  $("profileMessage").textContent="خطأ: "+error.message;
+  $("profileMessage").style.color="#c33";
+ }finally{btn.disabled=false;}
+};
+
+/* الأصدقاء */
+async function loadFriendRequests(){
+ const {data,error}=await db.from("friend_requests")
+  .select("id,requester_id,addressee_id,status,created_at")
+  .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
+ if(error)throw error;
+ friendRequests=data||[];
+}
+
+function relationWith(otherId){
+ return friendRequests.find(r=>
+  (r.requester_id===user.id&&r.addressee_id===otherId)||
+  (r.requester_id===otherId&&r.addressee_id===user.id)
+ );
+}
+
+function getFriendIds(){
+ return [...new Set(friendRequests.filter(r=>
+  r.status==="accepted"&&(r.requester_id===user.id||r.addressee_id===user.id)
+ ).map(r=>r.requester_id===user.id?r.addressee_id:r.requester_id))];
+}
+
+async function loadSocialData(){
+ if(!user||socialLoading)return;
+ socialLoading=true;
+ try{
+  await loadProfile();
+  await loadFriendRequests();
+  await renderFriends();
+ }catch(error){
+  console.error(error);
+  $("friendsList").innerHTML='<div class="empty">تعذر تحميل بيانات الأصدقاء: '+escapeHTML(error.message)+'</div>';
+ }finally{socialLoading=false;}
+}
+
+/* المحادثات */
+function orderedUsers(a,b){
+ return a<b?[a,b]:[b,a];
+}
+
+async function getOrCreateConversation(otherId){
+ const [user1,user2]=orderedUsers(user.id,otherId);
+ const {data:existing,error:findError}=await db.from("conversations")
+  .select("id").eq("user1_id",user1).eq("user2_id",user2).maybeSingle();
+ if(findError)throw findError;
+ if(existing)return existing.id;
+ const {data:created,error:createError}=await db.from("conversations")
+  .upsert({user1_id:user1,user2_id:user2},{onConflict:"user1_id,user2_id"})
+  .select("id").single();
+ if(createError)throw createError;
+ return created.id;
+}
+
+async function loadConversationPreviews(friendIds){
+ const box=$("conversationsList");
+ if(!friendIds.length){
+  box.innerHTML='<div class="empty">لا توجد محادثات بعد ❤️</div>';
+  return;
+ }
+ try{
+  const {data:profiles,error:profileError}=await db.from("profiles")
+   .select("id,display_name,avatar_url").in("id",friendIds);
+  if(profileError)throw profileError;
+  const {data:messages,error:messageError}=await db.from("messages")
+   .select("id,sender_id,recipient_id,content,created_at,read_at")
+   .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
+   .order("created_at",{ascending:false}).limit(500);
+  if(messageError)throw messageError;
+  const latest={};
+  (messages||[]).forEach(m=>{
+   const other=m.sender_id===user.id?m.recipient_id:m.sender_id;
+   if(friendIds.includes(other)&&!latest[other])latest[other]=m;
+  });
+  const ordered=(profiles||[]).sort((a,b)=>
+   new Date(latest[b.id]?.created_at||0)-new Date(latest[a.id]?.created_at||0)
+  );
+  if(!ordered.length){
+   box.innerHTML='<div class="empty">لا توجد محادثات</div>';return;
+  }
+  box.innerHTML=ordered.map(p=>{
+   const m=latest[p.id];
+   const unread=m&&m.recipient_id===user.id&&!m.read_at;
+   const preview=m?(m.sender_id===user.id?"أنت: ":"")+m.content:"ابدأ محادثة جديدة ❤️";
+   return `<div class="conversation-row" data-chat="${escapeHTML(p.id)}">
+    <div class="avatar">${avatarHTML(p.avatar_url)}</div>
+    <div class="conversation-info">
+     <strong>${escapeHTML(p.display_name||"مستخدم")}</strong>
+     <p>${escapeHTML(preview)}</p>
+    </div>
+    <div class="conversation-meta">
+     ${m?escapeHTML(formatDate(m.created_at)):""}
+     ${unread?'<br><span class="unread-dot"></span>':''}
+    </div>
+   </div>`;
+  }).join("");
+ }catch(error){
+  box.innerHTML='<div class="empty">تعذر تحميل المحادثات: '+escapeHTML(error.message)+'</div>';
+ }
+}
+
+async function renderFriends(){
+ const incoming=friendRequests.filter(r=>
+  r.addressee_id===user.id&&r.status==="pending"
+ );
+ const friendIds=getFriendIds();
+ $("profileFriends").textContent=friendIds.length;
+ await loadConversationPreviews(friendIds);
+ if(!incoming.length){
+  $("incomingRequests").innerHTML='<div class="empty">لا توجد طلبات صداقة جديدة</div>';
+ }else{
+  const ids=incoming.map(r=>r.requester_id);
+  const {data,error}=await db.from("profiles").select("id,display_name,avatar_url").in("id",ids);
+  if(error)throw error;
+  $("incomingRequests").innerHTML=(data||[]).map(p=>`
+   <div class="user-row">
+    <div class="avatar">${avatarHTML(p.avatar_url)}</div>
+    <div class="user-info"><strong>${escapeHTML(p.display_name)}</strong><small>يريد إضافتك صديقاً</small></div>
+    <button data-accept="${escapeHTML(p.id)}">قبول</button>
+    <button class="danger" data-reject="${escapeHTML(p.id)}">رفض</button>
+   </div>`).join("");
+ }
+ if(!friendIds.length){
+  $("friendsList").innerHTML='<div class="empty">لم تضف أصدقاء بعد</div>';
+ }else{
+  const {data,error}=await db.from("profiles").select("id,display_name,avatar_url").in("id",friendIds);
+  if(error)throw error;
+  $("friendsList").innerHTML=(data||[]).map(p=>`
+   <div class="user-row">
+    <div class="avatar">${avatarHTML(p.avatar_url)}</div>
+    <div class="user-info"><strong>${escapeHTML(p.display_name)}</strong><small>صديقك في SHAHINAZ</small></div>
+    <button data-chat="${escapeHTML(p.id)}">مراسلة</button>
+    <button class="danger" data-unfriend="${escapeHTML(p.id)}">إزالة</button>
+   </div>`).join("");
+ }
+}
+
+async function searchUsers(){
+ const term=$("searchUsers").value.trim();
+ if(term.length<2){
+  $("searchResults").innerHTML='<div class="empty">اكتب حرفين على الأقل للبحث</div>';return;
+ }
+ $("searchResults").innerHTML='<div class="status">جاري البحث...</div>';
+ try{
+  const {data,error}=await db.from("profiles")
+   .select("id,display_name,bio,avatar_url")
+   .ilike("display_name","%"+term+"%").neq("id",user.id).limit(30);
+  if(error)throw error;
+  if(!data?.length){
+   $("searchResults").innerHTML='<div class="empty">لم نعثر على مستخدم بهذا الاسم</div>';return;
+  }
+  $("searchResults").innerHTML=data.map(p=>{
+   const relation=relationWith(p.id);
+   let label="إضافة صديق",action=`data-add="${escapeHTML(p.id)}"`,cls="";
+   if(relation?.status==="accepted"){label="صديق ✓";action="";cls="secondary";}
+   else if(relation?.status==="pending"&&relation.requester_id===user.id){label="تم إرسال الطلب";action="";cls="secondary";}
+   else if(relation?.status==="pending"){label="لديك طلب وارد";action="";cls="secondary";}
+   return `<div class="user-row">
+    <div class="avatar">${avatarHTML(p.avatar_url)}</div>
+    <div class="user-info"><strong>${escapeHTML(p.display_name)}</strong><small>${escapeHTML(p.bio||"مستخدم SHAHINAZ")}</small></div>
+    <button class="${cls}" ${action}>${label}</button>
+   </div>`;
+  }).join("");
+ }catch(error){
+  $("searchResults").innerHTML='<div class="empty">خطأ في البحث: '+escapeHTML(error.message)+'</div>';
+ }
+}
+$("searchButton").onclick=searchUsers;
+$("searchUsers").addEventListener("keydown",e=>{
+ if(e.key==="Enter"){e.preventDefault();searchUsers();}
+});
+
+async function sendFriendRequest(otherId){
+ if(!otherId||otherId===user.id)return;
+ if(relationWith(otherId)){alert("يوجد طلب أو صداقة بينكما بالفعل.");return;}
+ try{
+  const {error}=await db.from("friend_requests").insert({
+   requester_id:user.id,addressee_id:otherId,status:"pending"
+  });
+  if(error)throw error;
+  await loadFriendRequests();
+  await searchUsers();
+  await renderFriends();
+  alert("تم إرسال طلب الصداقة ❤️");
+ }catch(error){alert("تعذر إرسال الطلب: "+error.message);}
+}
+
+async function acceptRequest(otherId){
+ const request=friendRequests.find(r=>
+  r.requester_id===otherId&&r.addressee_id===user.id&&r.status==="pending"
+ );
+ if(!request)return;
+ try{
+  const {error}=await db.from("friend_requests").update({status:"accepted"}).eq("id",request.id);
+  if(error)throw error;
+  await loadFriendRequests();
+  await renderFriends();
+  await searchUsers();
+  alert("أصبحتم أصدقاء الآن ❤️");
+ }catch(error){alert("تعذر قبول الطلب: "+error.message);}
+}
+
+async function removeFriend(otherId){
+ if(!confirm("هل تريد إزالة هذا الطلب أو الصديق؟"))return;
+ const relation=relationWith(otherId);
+ if(!relation)return;
+ try{
+  const {error}=await db.from("friend_requests").delete().eq("id",relation.id);
+  if(error)throw error;
+  await loadFriendRequests();
+  await renderFriends();
+  await searchUsers();
+ }catch(error){alert("تعذر الإزالة: "+error.message);}
+}
+
+/* فتح المحادثة */
+async function openChat(otherId){
+ try{
+  const isFriend=friendRequests.some(r=>
+   r.status==="accepted"&&
+   ((r.requester_id===user.id&&r.addressee_id===otherId)||
+    (r.requester_id===otherId&&r.addressee_id===user.id))
+  );
+  if(!isFriend){alert("المراسلة متاحة للأصدقاء فقط.");return;}
+  const {data,error}=await db.from("profiles")
+   .select("id,display_name,avatar_url").eq("id",otherId).single();
+  if(error)throw error;
+  chatUser=data;
+  $("feedArea").hidden=true;
+  $("profilePanel").hidden=true;
+  $("friendsPanel").hidden=true;
+  $("chatPanel").hidden=false;
+  $("chatTitle").textContent=data.display_name||"محادثة";
+  $("chatInput").value="";
+  conversationId=await getOrCreateConversation(otherId);
+  await loadMessages();
+  startChatRealtime();
+  window.scrollTo({top:0,behavior:"smooth"});
+ }catch(error){alert("تعذر فتح المحادثة: "+error.message);}
+}
+
+/* الرسائل وإيصالات القراءة */
+async function loadMessages(){
+ if(!user||!chatUser||!conversationId)return;
+ $("chatStatus").textContent="جاري تحميل الرسائل...";
+ try{
+  const {data,error}=await db.from("messages")
+   .select("id,conversation_id,sender_id,recipient_id,content,created_at,read_at")
+   .eq("conversation_id",conversationId)
+   .order("created_at",{ascending:true}).limit(200);
+  if(error)throw error;
+  const unreadIds=(data||[]).filter(m=>
+   m.sender_id===chatUser.id&&!m.read_at
+  ).map(m=>m.id);
+  if(unreadIds.length){
+   const now=new Date().toISOString();
+   const {error:readError}=await db.from("messages")
+    .update({read_at:now}).in("id",unreadIds);
+   if(readError)throw readError;
+   data.forEach(m=>{if(unreadIds.includes(m.id))m.read_at=now;});
+  }
+  const box=$("chatMessages");
+  if(!data?.length){
+   box.innerHTML='<div class="empty">ابدأ أول محادثة ❤️</div>';
+  }else{
+   box.innerHTML=data.map(m=>`
+    <div class="chat-message ${m.sender_id===user.id?"chat-mine":"chat-theirs"}">
+     ${escapeHTML(m.content)}
+     <small>
+      ${escapeHTML(formatDate(m.created_at))}
+      ${m.sender_id===user.id?`<span class="read-status ${m.read_at?"read":""}">${m.read_at?"✓✓ تمت القراءة":"✓ تم الإرسال"}</span>`:""}
+     </small>
+    </div>`).join("");
+  }
+  box.scrollTop=box.scrollHeight;
+  $("chatStatus").textContent="";
+  refreshConversationList();
+ }catch(error){
+  $("chatStatus").textContent="خطأ في تحميل الرسائل: "+error.message;
+ }
+}
+
+async function refreshConversationList(){
+ if(!user)return;
+ try{
+  await loadFriendRequests();
+  await loadConversationPreviews(getFriendIds());
+ }catch(error){console.warn(error);}
+}
+
+/* إرسال رسالة */
+$("chatForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ if(!chatUser||!conversationId||chatBusy)return;
+ const content=$("chatInput").value.trim();
+ if(!content)return;
+ chatBusy=true;
+ const btn=$("chatForm").querySelector("button");
+ btn.disabled=true;
+ try{
+  const {error}=await db.from("messages").insert({
+   conversation_id:conversationId,
+   sender_id:user.id,
+   recipient_id:chatUser.id,
+   content
+  });
+  if(error)throw error;
+  $("chatInput").value="";
+  await loadMessages();
+  await refreshConversationList();
+ }catch(error){
+  alert("تعذر إرسال الرسالة: "+error.message);
+ }finally{
+  chatBusy=false;
+  btn.disabled=false;
+ }
+});
+
+/* تحديث المحادثة لحظياً */
+function startChatRealtime(){
+ stopChatRealtime();
+ if(!db||!chatUser)return;
+ chatChannel=db.channel("chat-"+user.id+"-"+chatUser.id)
+ .on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},payload=>{
+  const m=payload.new;
+  if(m.conversation_id===conversationId)loadMessages();
+ })
+ .on("postgres_changes",{event:"UPDATE",schema:"public",table:"messages"},payload=>{
+  const m=payload.new;
+  if(m.conversation_id===conversationId&&m.sender_id===user.id)loadMessages();
+ })
+ .subscribe();
+}
+
+function stopChatRealtime(){
+ if(chatChannel&&db){
+  db.removeChannel(chatChannel);
+  chatChannel=null;
+ }
+}
+
+/* الإشعارات والرسائل الواردة */
+function startInboxRealtime(){
+ if(!db||!user)return;
+ stopInboxRealtime();
+ inboxChannel=db.channel("inbox-"+user.id)
+ .on("postgres_changes",{
+  event:"INSERT",schema:"public",table:"messages",
+  filter:`recipient_id=eq.${user.id}`
+ },payload=>{
+  const m=payload.new;
+  if(chatUser&&m.sender_id===chatUser.id)loadMessages();
+  else showIncomingNotification(m);
+  refreshConversationList();
+ })
+ .on("postgres_changes",{
+  event:"UPDATE",schema:"public",table:"messages",
+  filter:`sender_id=eq.${user.id}`
+ },()=>{
+  refreshConversationList();
+  if(chatUser)loadMessages();
+ })
+ .subscribe();
+}
+
+function stopInboxRealtime(){
+ if(inboxChannel&&db){
+  db.removeChannel(inboxChannel);
+  inboxChannel=null;
+ }
+}
+
+function showIncomingNotification(message){
+ if(!("Notification" in window)||Notification.permission!=="granted")return;
+ try{
+  const notification=new Notification("رسالة جديدة في SHAHINAZ",{
+   body:message.content,tag:"shahinaz-"+message.sender_id
+  });
+  notification.onclick=()=>{
+   window.focus();
+   openChat(message.sender_id);
+   notification.close();
+  };
+ }catch(error){console.warn(error);}
+}
+
+$("notificationBtn").onclick=async()=>{
+ if(!("Notification" in window)){
+  alert("هذا المتصفح لا يدعم إشعارات المتصفح.");return;
+ }
+ try{
+  const permission=await Notification.requestPermission();
+  if(permission==="granted"){
+   alert("تم تفعيل الإشعارات ❤️");
+   $("notificationBtn").textContent="🔔 الإشعارات مفعلة";
+  }else alert("لم يتم السماح بالإشعارات. يمكنك تفعيلها من إعدادات المتصفح.");
+ }catch(error){alert("تعذر تفعيل الإشعارات: "+error.message);}
+};
+
+/* التنقل والأحداث */
+$("friendsPanel").addEventListener("click",async e=>{
+ const chat=e.target.closest("[data-chat]");
+ if(chat){await openChat(chat.dataset.chat);return;}
+ const add=e.target.closest("[data-add]");
+ if(add){await sendFriendRequest(add.dataset.add);return;}
+ const accept=e.target.closest("[data-accept]");
+ if(accept){await acceptRequest(accept.dataset.accept);return;}
+ const reject=e.target.closest("[data-reject]");
+ if(reject){await removeFriend(reject.dataset.reject);return;}
+ const unfriend=e.target.closest("[data-unfriend]");
+ if(unfriend){await removeFriend(unfriend.dataset.unfriend);return;}
+});
+
+$("conversationsList").addEventListener("click",async e=>{
+ const row=e.target.closest("[data-chat]");
+ if(row)await openChat(row.dataset.chat);
+});
+
+$("refreshChat").onclick=loadMessages;
+$("backFriends").onclick=()=>{
+ stopChatRealtime();
+ chatUser=null;
+ conversationId=null;
+ showPanel("friends");
+};
+
+function showPanel(name){
+ stopChatRealtime();
+ if(name!=="chat"){
+  $("feedArea").hidden=name!=="home";
+  $("profilePanel").hidden=name!=="profile";
+  $("friendsPanel").hidden=name!=="friends";
+  $("chatPanel").hidden=true;
+ }
+ $("homeTab").classList.toggle("active",name==="home");
+ $("profileTab").classList.toggle("active",name==="profile");
+ $("friendsTab").classList.toggle("active",name==="friends");
+ if(name==="profile"||name==="friends")loadSocialData();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+$("homeTab").onclick=()=>showPanel("home");
+$("profileTab").onclick=()=>showPanel("profile");
+$("friendsTab").onclick=()=>showPanel("friends");
+
+/* تسجيل الدخول وإنشاء الحساب */
+$("authForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ if(!db){showMessage("الخدمة غير متصلة.");return;}
+ const email=$("email").value.trim();
+ const password=$("password").value;
+ const fullName=$("fullName").value.trim();
+ const btn=$("submitBtn");
+ if(mode==="signup"&&!fullName){
+  showMessage("اكتب اسمك أولاً.");return;
+ }
+ btn.disabled=true;
+ btn.textContent="يرجى الانتظار...";
+ showMessage("جاري الاتصال...");
+ try{
+  let result;
+  if(mode==="signup"){
+   result=await db.auth.signUp({
+    email,password,options:{data:{full_name:fullName}}
+   });
+   if(result.error)throw result.error;
+   showMessage(
+    result.data.session?
+    "تم إنشاء الحساب بنجاح ❤️":
+    "تم إنشاء الحساب. تحقق من بريدك الإلكتروني لتأكيده.",
+    true
+   );
+  }else{
+   result=await db.auth.signInWithPassword({email,password});
+   if(result.error)throw result.error;
+   showMessage("تم تسجيل الدخول بنجاح ❤️",true);
+  }
+ }catch(error){
+  showMessage(error.message||"حدث خطأ.");
+ }finally{
+  btn.disabled=false;
+  btn.textContent=mode==="login"?"تسجيل الدخول":"إنشاء حساب";
+ }
+});
+
+$("logout").onclick=async()=>{
+ if(!db)return;
+ stopChatRealtime();
+ stopInboxRealtime();
+ const {error}=await db.auth.signOut();
+ if(error)alert(error.message);
+};
+
+/* تشغيل التطبيق */
+async function loadSupabaseLibrary(){
+ const sources=[
+  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
+  "https://unpkg.com/@supabase/supabase-js@2"
+ ];
+ for(const source of sources){
+  try{
+   $("loadingText").textContent="جاري تحميل خدمات التطبيق...";
+   await new Promise((resolve,reject)=>{
+    const script=document.createElement("script");
+    script.src=source;
+    script.onload=resolve;
+    script.onerror=()=>reject(new Error("تعذر تحميل المكتبة"));
+    document.head.appendChild(script);
+   });
+   if(window.supabase?.createClient)return true;
+  }catch(error){console.warn(error);}
+ }
+ return false;
+}
+
+async function startApp(){
+ try{
+  const loaded=await loadSupabaseLibrary();
+  if(!loaded){
+   fatal("تعذر تحميل مكتبة Supabase. تحقق من اتصال الإنترنت.");
+   return;
+  }
+  db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const result=await db.auth.getSession();
+  if(result.error)throw result.error;
+  showUser(result.data.session);
+  db.auth.onAuthStateChange((event,session)=>{
+   if(event==="TOKEN_REFRESHED"){
+    user=session?.user||user;
+    return;
+   }
+   showUser(session);
+  });
+  stopLoading();
+ }catch(error){
+  console.error(error);
+  fatal(error.message||"حدث خطأ أثناء تشغيل التطبيق.");
+ }
+}
+
+startApp();
+</script>
+</body>
+</html>
+
