@@ -773,3 +773,12 @@ if (document.readyState === "loading") {
 } else {
   initializeShahinazCalls();
 }
+const callInitWatcher = setInterval(() => {
+  if (db && user && !callChannel) {
+    startCallRealtime();
+  }
+
+  if (db && user && callChannel) {
+    clearInterval(callInitWatcher);
+  }
+}, 1000);
